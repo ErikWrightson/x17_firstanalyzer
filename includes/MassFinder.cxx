@@ -55,6 +55,7 @@ MassFinder::MassFinder(TChain* c, Int_t rN){
     chain->SetBranchAddress("matchGEMz",  mgz);       //All z-coordinate matches found for on the GEMs.
 
     setup_X_histos();
+    setup_Moller_histos();
 
     partEnergies = {0,0,0};
 
@@ -125,6 +126,17 @@ void MassFinder::save_histos(TString rootFile){
         for(Int_t j = 0; j < 4; j++){
             (*arr).Add(h_X_vZ[i][j]);
         }
+    }
+
+    for(Int_t j = 0; j < MCUT_NUM; j++){
+        (*arr).Add(h_M_HC_XY[j]);
+        (*arr).Add(h_M_E_theta[j]);
+        (*arr).Add(h_M_invM[j]);
+        (*arr).Add(h_M_Sum_pt[j]);
+        (*arr).Add(h_M_Sum_pxVpy[j]);
+        (*arr).Add(h_M_diffPhi[j]);
+        (*arr).Add(h_M_timing[j]);
+        (*arr).Add(h_M_vZ[j]);
     }
 
     TFile file1(rootFile,"RECREATE");
@@ -374,7 +386,7 @@ Utils::Point MassFinder::findVertZ(Int_t j){
  *
  * @param i - the particle index to fill
  * @param j - the cluster index to use for filling
- * @note - A helper for search_events_electron method
+ * @note - A helper for search_events_electrons method
  */
 void MassFinder::fillIndInfo(Int_t i, Int_t j){
     theta[i] = findTheta(cl_x[j], cl_y[j], cl_z[j]);
@@ -480,4 +492,72 @@ void MassFinder::fillMollerCutHistos(Int_t c, Int_t j, Int_t k){
     h_M_Sum_pt[c]->Fill(Mol.Pt());
     h_M_Sum_pxVpy[c]->Fill(Mol.Px(), Mol.Py());
     h_M_diffPhi[c]->Fill(phi_dif_Mol);
+}
+
+/**
+ * Instantiates each relevant histogram for the Moller event selections.
+ */
+void MassFinder::setup_Moller_histos(){
+
+    for(Int_t i = 0; i < MCUT_NUM; i++){
+
+        TString xy_Name  = TString::Format("h_M_HC_XY_cut%d", i);
+        TString xy_Title = TString::Format("Moller HyCal XY Position Run %b - Cut: %s;x [mm]; y [mm]", runNum, XCUT_NAME[i]);
+        h_M_HC_XY[i] = new TH2F(xy_Name, xy_Title, HC_XBINS, HC_XMIN, HC_XMAX, HC_YBINS, HC_YMIN, HC_YMAX);
+
+        TString th_Name  = TString::Format("h_M_E_theta_cut%d", i);
+        TString th_Title = TString::Format("Moller Energy v. #theta Run %b - Cut: %s;#theta [#circ]; Energy [MeV]", runNum, XCUT_NAME[i]);
+        h_M_E_theta[i] = new TH2F(th_Name, th_Title, TH_BINS, MIN_TH, MAX_TH, Ebeam+200.0, 0.0 ,Ebeam+200.0);
+
+        TString invM_Name = TString::Format("h_M_invM_cut%d",i);
+        TString invM_Title = TString::Format("Moller Invariant Mass of Potential Particle 1/3 MeV per bin Run %d - Cut: %s;Mass [MeV/c^{2}]; Count", runNum, XCUT_NAME[i]);
+        h_M_invM[i] = new TH1F(invM_Name, invM_Title, INVM_BINS, MIN_INVM, MAX_INVM);
+
+        TString sum_pt_Name = TString::Format("h_M_Sum_pt_cut%d", i);
+        TString sum_pt_Title = TString::Format("Moller 2 particle #Sigmap_{t} Run %d - Cut: %s;p_{t} [MeV/c];Count", runNum, XCUT_NAME[i]);
+        h_M_Sum_pt[i] = TH1F(sum_pt_Name, sum_pt_Title, PT_BINS, MIN_PT, MAX_PT);
+
+        TString sum_pxVpy_Name = TString::Format("h_M_pxVpy_cut%d", i);
+        TString sum_pxVpy_Title = TString::Format("Moller 2 particle #Sigmap_{y} v. #Sigmap_{x} Run %d - Cut: %s", runNum, XCUT_NAME[i]);
+        h_M_Sum_pxVpy[i] = TH2F(sum_pxVpy_Name, sum_pxVpy_Title, 2*PT_BINS, -1.0*MAX_PT, MAX_PT, 2*PT_BINS, -1.0*MAX_PT, MAX_PT);
+
+        TString diffPhi_Name = TString::Format("h_M_diffPhi_cut%d", i);
+        TString diffPhi_Title = TString::Format("Moller #Delta#phi of particle candidate and e' Run %d - Cut: %s", runNum, XCUT_NAME[i]);
+        h_M_diffPhi[i] = new TH1F(diffPhi_Name, diffPhi_Title, PHI_BINS, MIN_PHI, MAX_PHI);
+
+        TString timing_Name = TString::Format("h_M_timing_cut%d", i);
+        TString timing_Title = TString::Format("Moller #Deltat (t_{cl_{max}} - t_{cl_{min}}) Run %d - Cut: %s", runNum, XCUT_NAME[i]);
+        h_M_timing[i] = TH1F(timing_Name, timing_Title, TIME_BINS, MIN_TIME, MAX_TIME);
+       
+        TString vZ_Name = TString::Format("h_M_vZ_cut%d", i);
+        TString vZ_Title = TString::Format("Moller V_{z} Run %d - Cut: %s", runNum, XCUT_NAME[i]);
+        h_M_vZ[i] = new TH1F(vZ_Name, vZ_Title, VZ_BINS, MIN_VZ, MAX_VZ);
+    }
+}
+
+void MassFinder::delete_histos(){
+    for(Int_t i = 0; i < XCUT_NUM; i++){
+        delete h_X_HC_XY[i];
+        delete h_X_E_theta[i];
+        delete h_X_invM[i];
+        delete h_X_Sum_pt[i];
+        delete h_X_Sum_pxVpy[i];
+        delete h_X_diffPhi[i];
+        delete h_X_timing[i];
+
+        for(Int_t j = 0; j < 4; j++){
+            delete h_X_vZ[i][j];
+        }
+    }
+
+    for(Int_t j = 0; j < MCUT_NUM; j++){
+        delete h_M_HC_XY[j];
+        delete h_M_E_theta[j];
+        delete h_M_invM[j];
+        delete h_M_Sum_pt[j];
+        delete h_M_Sum_pxVpy[j];
+        delete h_M_diffPhi[j];
+        delete h_M_timing[j];
+        delete h_M_vZ[j];
+    }
 }

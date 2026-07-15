@@ -36,11 +36,9 @@
 //Needed for reading in vector types from root files.
 #include <TInterpreter.h>
 
-#include "includes/Trigger.h"
-#include "includes/LMSTrig.h"
-#include "includes/ClustTrig.h"
+#include "includes/MassFinder.h"
 #include "includes/Utils.h"
-
+#include "includes/Physics_Utils.h"
 
 using namespace std;
 
@@ -51,18 +49,6 @@ using namespace std;
  * @param argv - an array of the different arguments as an array of char* (strings).
  */
 int main (int argc, char **argv){
-
-    bool all = false;
-    bool Lms = false;
-    bool sum = false;
-    bool alpha = false;
-    bool mOR = false;
-    bool vtp_clust = false;
-    bool comp_TotalSum = false;
-    bool rand = false;
-    bool self = false;
-    bool recon = false;
-    bool applyOfflineCuts = true;
 
     string fileName;
     string fileListFileName;
@@ -110,7 +96,11 @@ int main (int argc, char **argv){
 
     TChain* fChain = Utils::makeChain(fileNameVec, "recon");
     
-    
+    MassFinder mass = new MassFinder(fChain);
+
+    mass.search_events_electrons();
+    mass.save_histos(outputDirectory + fn + ".root");
+    mass.delete_histos();
 
     return 0;
 }

@@ -32,7 +32,7 @@
 #include <TInterpreter.h>
 #include <TPrincipal.h>
 #include <TVectorD.h>
-#include <PxPyPzE4D.h>
+#include <Math/GenVector/PxPyPzE4D.h>
 #include "ROOT/TThreadedObject.hxx"
 
 //Generally useful includes

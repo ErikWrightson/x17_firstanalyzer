@@ -33,7 +33,7 @@
 #include <TInterpreter.h>
 #include <TPrincipal.h>
 #include <TVectorD.h>
-#include <PxPyPzE4D.h>
+#include <Math/GenVector/PxPyPzE4D.h>
 #include "ROOT/TThreadedObject.hxx"
 #include "Physics_Utils.h"
 #include "Utils.h"
@@ -155,6 +155,7 @@ class MassFinder{
         MassFinder(TChain* c);
         void search_events_electrons();
         void save_histos(TString rootFile);
+        void delete_histos();
 
     private:
 
@@ -223,6 +224,7 @@ class MassFinder{
         Double_t findVertZ(Int_t j);
         void fillIndInfo(Int_t i, Int_t j);
 
+        void setup_Moller_histos();
         void searchMollerEvent(Int_t j, Int_t k);
         void fillMollerCutHistos(Int_t j, Int_t k);
 
