@@ -56,9 +56,14 @@ class MassFinder{
     public:
         TChain* chain;
 
+        static constexpr Double_t sigma_E = 5.0; // the sigma level of the energy cuts.
 
-        static constexpr Int_t CUT_NUM = 11;
-        static constexpr TString XCUT_NAME[CUT_NAME] = {"None", "3 or More", "Timing", "Fiducial", "Cluster E", "E Sum", "Coplanarity", "X_E", "1 GEM Match", "2 GEM Match", "Vertex Z"}
+        static constexpr Int_t XCUT_NUM = 11;
+        static constexpr TString XCUT_NAME[XCUT_NUM] = {"None", "3 or More", "Timing", "Fiducial", "Cluster E", "E Sum", "Coplanarity", "X_E", "1 GEM Match", "2 GEM Match", "Vertex Z"}
+
+        static constexpr Int_t MCUT_NUM = 9;
+        static constexpr TString MCUT_NAME[MCUT_NUM] = {"2 or More", "Timing", "Fiducial", "Kinematic (E_{exp})", "Coplanarity", "Elasticity", "1 GEM Match", "2 GEM Match", "Vertex Z"}
+
 
         static constexpr Int_t  MAX_CLUSTERS = 400;      //Maximum number of clusters.
         static constexpr Int_t  MAX_GEMS = 4;            //Maximum number of GEMs.
@@ -85,8 +90,8 @@ class MassFinder{
         static constexpr Double_t MAX_PT = 40.0;
         Double_t PT_BINS = (MAX_PT - MIN_PT)*10.0;
 
-        static constexpr Double_t MIN_PHI = 150.0;
-        static constexpr Double_t MAX_PHI = 210.0;
+        static constexpr Double_t MIN_PHI = 0.0;
+        static constexpr Double_t MAX_PHI = 360.0;
         Double_t PHI_BINS = (MAX_PHI - MIN_PHI)*10.0;
 
         static constexpr Double_t MIN_TIME = 150.0;
@@ -162,25 +167,64 @@ class MassFinder{
         Double_t phi[3];
         DirVector dir[3];
         PxPyPzE4D particle_e[3];
+        Int_t layer[3];
         vector<Double_t> partEnergies;
+        Double_t numMatches[3];
+        Double_t vZ[3];
+        Utils::Point close[3];
+        bool oneGEM[3];
+        bool twoGEM[3];
+        Int_t cut;
+        Double_t maxT;
+        Double_t minT;
+        Double_t dT;
         
         //Relevant values of potential X particles. 
         PxPyPzE4D X[3];
         Double_t X_th[3];
         Double_t X_phi[3];
+        Double_t phi_dif[3];
+        vector<Int_t> X_eli;
+
+        //Relevant values for the sum of all 3 candidate particles.
+        Double_t sumRes;
+        PxPyPzE4D sum;
+
+        PxPyPzE4D Mol;
+        Double_t MsumRes;
+        Double_t dT_Mol;
+        Double_t phi_dif_Mol;
+        Double_t exp_E[2];
 
         //X histograms
-        TH2F* h_X_HC_XY[CUT_NUM];
-        TH2F* h_X_E_theta[CUT_NUM];
-        TH1F* h_X_invM[CUT_NUM];
-        TH1F* h_X_pt[CUT_NUM];
-        TH2F* h_X_pxVpy[CUT_NUM];
-        TH1F* h_X_vZ[CUT_NUM][4];
-        TH1F* h_X_diffPhi[CUT_NUM];
-        TH1F* h_X_timing[CUT_NUM];
+        TH2F* h_X_HC_XY[XCUT_NUM];
+        TH2F* h_X_E_theta[XCUT_NUM];
+        TH1F* h_X_invM[XCUT_NUM];
+        TH1F* h_X_Sum_pt[XCUT_NUM];
+        TH2F* h_X_Sum_pxVpy[XCUT_NUM];
+        TH1F* h_X_vZ[XCUT_NUM][4];
+        TH1F* h_X_diffPhi[XCUT_NUM];
+        TH1F* h_X_timing[XCUT_NUM];
+
+        //Moller histograms
+        TH2F* h_M_HC_XY[MCUT_NUM];
+        TH2F* h_M_E_theta[MCUT_NUM];
+        TH1F* h_M_invM[MCUT_NUM];
+        TH1F* h_M_Sum_pt[MCUT_NUM];
+        TH2F* h_M_Sum_pxVpy[MCUT_NUM];
+        TH1F* h_M_vZ[MCUT_NUM];
+        TH1F* h_M_diffPhi[MCUT_NUM];
+        TH1F* h_M_timing[MCUT_NUM];
 
         void setup_X_histos();
-        void fillCutHistos(Int_t c);
+        void searchXEvent_electron(Int_t j, Int_t k, Int_t m);
+        void fillCutHistos_electron(Int_t j, Int_t k, Int_t m);
+        void findMaxAndMinTime(Int_t j, Int_t k, Int_t m);
+        Double_t findVertZ(Int_t j);
+        void fillIndInfo(Int_t i, Int_t j);
+
+        void searchMollerEvent(Int_t j, Int_t k);
+        void fillMollerCutHistos(Int_t j, Int_t k);
 
 };
 

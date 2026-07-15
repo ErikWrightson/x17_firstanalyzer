@@ -109,12 +109,13 @@ namespace Physics_Utils{
 
     /** --------------------------
      * @author Tyler Hague <tjhague@jlab.org>
-     * @author Erik Wrightson <wrightso@jlab.org> - modified for more accuracy
+     * @author Erik Wrightson <wrightso@jlab.org> - modified for more accuracy and the first layer cut
      *
      * Determine the hycal layer of the hit
      * Always at least cut to require that it's greater than 0
      * 0 means it went through the center (should never have data for that)
      * or that it didn't hit the PbWO4
+     * Only
      * @param x - X Location in Hycal
      * @param y - Y location in Hycal
      *
@@ -123,7 +124,7 @@ namespace Physics_Utils{
      */
     static Int_t hycal_layer(Float_t x, Float_t y){
 	
-	    if(TMath::Abs(x)>20.77*17.0 || TMath::Abs(y)>20.75*17 || (TMath::Abs(x)<20.77 && TMath::Abs(y)<20.75)){
+	    if(TMath::Abs(x)>20.77*17.0 || TMath::Abs(y)>20.75*17 || (TMath::Abs(x)<(20.77+20.77/2.0) && TMath::Abs(y)<(20.75+20.75/2.0))){
 		    //Event is out of the crystals or through the center
 		    return 0;
 	    }
@@ -181,5 +182,23 @@ namespace Physics_Utils{
         }
 
         return TMath::Sqrt(res);
+    }
+
+    /**
+     * Calculates the expected energy of an electron in Moller (e-e) Scattering at a given angle and beam energy.
+     * 
+     * @param theta - the theta position of the electron on the calorimeter.
+     *
+     * @return - the expected energy if this is a Moller event
+     */
+    static Double_t ee_ExpectedE(Double_t theta, Double_t EBeam){
+    
+        Double_t cosTheta = TMath::Cos(theta);
+        Double_t cosTheta_2 = cosTheta*cosTheta; 
+
+        Double_t num = m_e*(EBeam + m_e + (EBeam-m_e)*cosTheta_2);
+        Double_t denom  = EBeam + m_e - (EBeam-m_e)*cosTheta_2;
+
+        return num/denom;
     }
 }

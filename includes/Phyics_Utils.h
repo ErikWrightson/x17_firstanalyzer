@@ -70,6 +70,7 @@ namespace Physics_Utils{
         static Double_t findTheta(Double_t x, Double_t y, Double_t z);
         static Double_t findPhi(Double_t x, Double_t y);
         static Double_t combined_EnergyRes(Double_t E1, Double_t E2, Double_t E3);
+        static Double_t ee_ExpectedE(Double_t theta, Double_t EBeam)
 
 };
 
