@@ -11,6 +11,7 @@
 #include <sys/stat.h>
 #include <unistd.h>
 #include <fstream>
+#include <filesystem>
 
 
 //ROOT Includes that may be handy to have.
@@ -41,6 +42,7 @@
 #include "includes/Physics_Utils.h"
 
 using namespace std;
+namespace fs = std::filesystem;
 
 /**
  * The main function that launches the trigger analysis.
@@ -53,9 +55,11 @@ int main (int argc, char **argv){
     string fileName;
     string fileListFileName;
 
-    TString outputDirectory = "outfiles/";
-    TString rootOutputDirectory = "rootOutfiles/";
+    fs::path outputDirectory = fs::path("/work") / "hallb" / "prad" / "wrightso" / "x17_firstanalyzer" / "outfiles";
     TString fn = "default";
+    Int_t rN = 0;
+
+    fs::path inputPath = fs::path("/volatile") / "hallb" / "prad" / "x17_replay"/ "";
 
 	if (argc<2) {
 		cout<<"ERR: Incorrect Arguments: " <<endl;
@@ -67,14 +71,23 @@ int main (int argc, char **argv){
 
     // ── Parse command-line ───────────────────────────────────────────────
     int opt;
-    while ((opt = getopt(argc, argv, "f:L:o:")) != -1) {
+    while ((opt = getopt(argc, argv, "f:L:o:b:h")) != -1) {
         switch (opt) {
             case 'f': fileName = optarg; break;
             case 'L': fileListFileName = optarg; break;
+            case 'b': rN = stoi(optarg); break;
             case 'o': fn = optarg; break;
             case 'h':
-            default: Utils::printUsage(argv[0]); return (opt == 'h') ? 0 : 1;
+            default: Utils::printUsage(argv[0]); return (opt == 'h') ? 0 : -2;
         }
+    }
+
+    if(rN == 0){
+        rN = Utils::extractFirstInt(fileName);
+    }
+    else{
+        outputDirectory = outputDirectory / to_string(rN);
+        if(!fs::exists(outputDirectory)){fs::create_directories(outputDirectory);}
     }
 
     struct stat buffer;   
@@ -96,10 +109,10 @@ int main (int argc, char **argv){
 
     TChain* fChain = Utils::makeChain(fileNameVec, "recon");
     
-    MassFinder mass = new MassFinder(fChain);
+    MassFinder mass = MassFinder(fChain, rN);
 
     mass.search_events_electrons();
-    mass.save_histos(outputDirectory + fn + ".root");
+    mass.save_histos(fn + ".root");
     mass.delete_histos();
 
     return 0;

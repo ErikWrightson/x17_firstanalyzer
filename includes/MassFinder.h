@@ -34,6 +34,7 @@
 #include <TPrincipal.h>
 #include <TVectorD.h>
 #include <Math/GenVector/PxPyPzE4D.h>
+#include <Math/Vector4D.h>
 #include "ROOT/TThreadedObject.hxx"
 #include "Physics_Utils.h"
 #include "Utils.h"
@@ -50,6 +51,7 @@
 
 using namespace std;
 using namespace Physics_Utils;
+using ROOT::Math::PxPyPzE4D;
 
 class MassFinder{
 
@@ -59,47 +61,47 @@ class MassFinder{
         static constexpr Double_t sigma_E = 5.0; // the sigma level of the energy cuts.
 
         static constexpr Int_t XCUT_NUM = 11;
-        static constexpr TString XCUT_NAME[XCUT_NUM] = {"None", "3 or More", "Timing", "Fiducial", "Cluster E", "E Sum", "Coplanarity", "X_E", "1 GEM Match", "2 GEM Match", "Vertex Z"}
+        static const TString XCUT_NAME[XCUT_NUM];
 
         static constexpr Int_t MCUT_NUM = 9;
-        static constexpr TString MCUT_NAME[MCUT_NUM] = {"2 or More", "Timing", "Fiducial", "Kinematic (E_{exp})", "Coplanarity", "Elasticity", "1 GEM Match", "2 GEM Match", "Vertex Z"}
+        static const TString MCUT_NAME[MCUT_NUM];
 
 
-        static constexpr Int_t  MAX_CLUSTERS = 400;      //Maximum number of clusters.
+        static constexpr Int_t  MAX_CLUSTERS = 10000;      //Maximum number of clusters.
         static constexpr Int_t  MAX_GEMS = 4;            //Maximum number of GEMs.
 
         static constexpr Int_t MAX_VTP_CLUSTERS = 100;    //Maximum Number of clusters found by the VTP for the online clustering trigger.
 
-        static constexpr Double_t HC_XMIN = -600.0;
-        static constexpr Double_t HC_XMAX = 600.0;
-        static constexpr Double_t HC_XBINS = 1200.0;
+        static constexpr Double_t HC_XMIN = -400.0;
+        static constexpr Double_t HC_XMAX = 400.0;
+        static constexpr Double_t HC_XBINS = (HC_XMAX - HC_XMIN);
 
-        static constexpr Double_t HC_YMIN = -600.0;
-        static constexpr Double_t HC_YMAX = 600.0;
-        static constexpr Double_t HC_YBINS = 1200.0;
+        static constexpr Double_t HC_YMIN = -400.0;
+        static constexpr Double_t HC_YMAX = 400.0;
+        static constexpr Double_t HC_YBINS = (HC_YMAX - HC_YMIN);
 
         static constexpr Double_t MIN_TH = 0.0;
         static constexpr Double_t MAX_TH = 5.0;
         static constexpr Double_t TH_BINS = 50.0;
 
         static constexpr Double_t MIN_INVM = 0.0;
-        static constexpr Double_t MAX_INVM = 70.0;
+        static constexpr Double_t MAX_INVM = 60.0;
         Double_t INVM_BINS = (MAX_INVM - MIN_INVM)*3.0;
 
         static constexpr Double_t MIN_PT = 0.0;
         static constexpr Double_t MAX_PT = 40.0;
-        Double_t PT_BINS = (MAX_PT - MIN_PT)*10.0;
+        Double_t PT_BINS = (MAX_PT - MIN_PT)*5.0;
 
         static constexpr Double_t MIN_PHI = 0.0;
         static constexpr Double_t MAX_PHI = 360.0;
         Double_t PHI_BINS = (MAX_PHI - MIN_PHI)*10.0;
 
-        static constexpr Double_t MIN_TIME = 150.0;
-        static constexpr Double_t MAX_TIME = 210.0;
+        static constexpr Double_t MIN_TIME = 0.0;
+        static constexpr Double_t MAX_TIME = 32.0;
         Double_t TIME_BINS = (MAX_TIME - MIN_TIME);
 
         static constexpr Double_t MIN_VZ = -2000.0;
-        static constexpr Double_t MAXVZ = 7000.0;
+        static constexpr Double_t MAX_VZ = 9000.0;
         Double_t VZ_BINS = (MAX_VZ - MIN_VZ)/10.0;
 
         //Locations to store the event data
@@ -109,7 +111,6 @@ class MassFinder{
         Long64_t time;
         vector<unsigned int> sspRawBuf;
         vector<unsigned int>* sspRawPtr;
-        PRadTrigger trig;
 
         //Vectors containing the vtp bank information from the clustering triggers.
         vector<unsigned int> vtp_roc_tagsBuf;
@@ -152,7 +153,7 @@ class MassFinder{
         Float_t matchGEMy[MAX_CLUSTERS][2];
         Float_t matchGEMz[MAX_CLUSTERS][2];
 
-        MassFinder(TChain* c);
+        MassFinder(TChain* c, Int_t rN);
         void search_events_electrons();
         void save_histos(TString rootFile);
         void delete_histos();
@@ -167,7 +168,7 @@ class MassFinder{
         Double_t theta[3];
         Double_t phi[3];
         DirVector dir[3];
-        PxPyPzE4D particle_e[3];
+        LorentzV particle_e[3];
         Int_t layer[3];
         vector<Double_t> partEnergies;
         Double_t numMatches[3];
@@ -181,7 +182,7 @@ class MassFinder{
         Double_t dT;
         
         //Relevant values of potential X particles. 
-        PxPyPzE4D X[3];
+        LorentzV X[3];
         Double_t X_th[3];
         Double_t X_phi[3];
         Double_t phi_dif[3];
@@ -189,9 +190,9 @@ class MassFinder{
 
         //Relevant values for the sum of all 3 candidate particles.
         Double_t sumRes;
-        PxPyPzE4D sum;
+        LorentzV sum;
 
-        PxPyPzE4D Mol;
+        LorentzV Mol;
         Double_t MsumRes;
         Double_t dT_Mol;
         Double_t phi_dif_Mol;
@@ -206,6 +207,10 @@ class MassFinder{
         TH1F* h_X_vZ[XCUT_NUM][4];
         TH1F* h_X_diffPhi[XCUT_NUM];
         TH1F* h_X_timing[XCUT_NUM];
+        TH1F* h_X_sumE[XCUT_NUM];
+        TH1F* h_X_minE[XCUT_NUM];
+        TH1F* h_X_medE[XCUT_NUM];
+        TH1F* h_X_maxE[XCUT_NUM];
 
         //Moller histograms
         TH2F* h_M_HC_XY[MCUT_NUM];
@@ -216,17 +221,18 @@ class MassFinder{
         TH1F* h_M_vZ[MCUT_NUM];
         TH1F* h_M_diffPhi[MCUT_NUM];
         TH1F* h_M_timing[MCUT_NUM];
+        TH1F* h_M_sumE[MCUT_NUM];
 
         void setup_X_histos();
         void searchXEvent_electron(Int_t j, Int_t k, Int_t m);
-        void fillCutHistos_electron(Int_t j, Int_t k, Int_t m);
+        void fillCutHistos_electron(Int_t c, Int_t j, Int_t k, Int_t m);
         void findMaxAndMinTime(Int_t j, Int_t k, Int_t m);
-        Double_t findVertZ(Int_t j);
+        Utils::Point findVertZ(Int_t j);
         void fillIndInfo(Int_t i, Int_t j);
 
         void setup_Moller_histos();
         void searchMollerEvent(Int_t j, Int_t k);
-        void fillMollerCutHistos(Int_t j, Int_t k);
+        void fillMollerCutHistos(Int_t c, Int_t j, Int_t k);
 
 };
 

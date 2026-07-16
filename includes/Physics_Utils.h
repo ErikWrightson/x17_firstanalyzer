@@ -33,6 +33,7 @@
 #include <TPrincipal.h>
 #include <TVectorD.h>
 #include <Math/GenVector/PxPyPzE4D.h>
+#include <Math/Vector4D.h>
 #include "ROOT/TThreadedObject.hxx"
 
 //Generally useful includes
@@ -46,31 +47,33 @@
 #include <iomanip>
 
 using namespace std;
+using ROOT::Math::PxPyPzE4D;
 
 namespace Physics_Utils{
+    
+    typedef ROOT::Math::LorentzVector<PxPyPzE4D<Double_t>> LorentzV;
+    
+    static constexpr Double_t m_e = 0.511;
+    static constexpr Double_t rad2Deg = 180/TMath::Pi(); //Conversion from radians to degrees
+    static constexpr Double_t deg2Rad = TMath::Pi()/180; //Conversion from degree to radians
 
-    public:
+    struct DirVector{
+        Double_t d_x;
+        Double_t d_y;
+        Double_t d_z;
+    };
 
-        static constexpr Double_t m_e = 0.511;
-        static constexpr Double_t rad2Deg = 180/TMath::Pi(); //Conversion from radians to degrees
+    Double_t EnergyRes(Double_t E);
 
-        struct DirVector{
-            Double_t d_x;
-            Double_t d_y;
-            Double_t d_z;
-        };
-
-        static Double_t EnergyRes(Double_t E);
-
-        static DirVector makeDirVector(Double_t x, Double_t y, Double_t z);
-        static DirVector makeDirVector2Point(Double_t x1, Double_t y1, Double_t z1, Double_t x2, Double_t y2, Double_t z2);
-        static PxPyPzE4D make4D_EMomVector_Electron(Double_t E, DirVector p);
-        static PxPyPzE4D make4D_EMomVector_Photon(Double_t E, DirVector p);
-        static Int_t hycal_layer(Float_t x, Float_t y);
-        static Double_t findTheta(Double_t x, Double_t y, Double_t z);
-        static Double_t findPhi(Double_t x, Double_t y);
-        static Double_t combined_EnergyRes(Double_t E1, Double_t E2, Double_t E3);
-        static Double_t ee_ExpectedE(Double_t theta, Double_t EBeam)
+    DirVector makeDirVector(Double_t x, Double_t y, Double_t z);
+    DirVector makeDirVector2Point(Double_t x1, Double_t y1, Double_t z1, Double_t x2, Double_t y2, Double_t z2);
+    LorentzV make4D_EMomVector_Electron(Double_t E, DirVector p);
+    LorentzV make4D_EMomVector_Photon(Double_t E, DirVector p);
+    Int_t hycal_layer(Float_t x, Float_t y);
+    Double_t findTheta(Double_t x, Double_t y, Double_t z);
+    Double_t findPhi(Double_t x, Double_t y);
+    Double_t combined_EnergyRes(const vector<Double_t> E);
+    Double_t ee_ExpectedE(Double_t theta, Double_t EBeam);
 
 };
 

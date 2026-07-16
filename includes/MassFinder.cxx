@@ -7,6 +7,9 @@
  */
 #include "MassFinder.h"
 
+const TString MassFinder::MCUT_NAME[MCUT_NUM] = {"2 or More", "Timing", "Fiducial", "Kinematic (E_{exp})", "Coplanarity", "Elasticity", "1 GEM Match", "2 GEM Match", "Vertex Z"};
+const TString MassFinder::XCUT_NAME[XCUT_NUM] = {"None", "3 or More", "Timing", "Fiducial", "Cluster E", "E Sum", "Coplanarity", "X_E", "1 GEM Match", "2 GEM Match", "Vertex Z"};
+
 MassFinder::MassFinder(TChain* c, Int_t rN){
     runNum = rN;
     Ebeam = 2239.51;
@@ -54,6 +57,8 @@ MassFinder::MassFinder(TChain* c, Int_t rN){
     chain->SetBranchAddress("matchGEMy",  mgy);       //All y-coordinate matches found for on the GEMs.
     chain->SetBranchAddress("matchGEMz",  mgz);       //All z-coordinate matches found for on the GEMs.
 
+    chain->SetBranchStatus("cl_dt_rf", 0);
+
     setup_X_histos();
     setup_Moller_histos();
 
@@ -65,44 +70,61 @@ MassFinder::MassFinder(TChain* c, Int_t rN){
  * Sets up the histograms for the X particle analysis.
  */
 void MassFinder::setup_X_histos(){
-    TString m[4] = {"All", "Min_{E}", "Med_{E}", "Max_{E}"};
+    TString m[4] = {"All", "Min_E", "Med_E", "Max_E"};
     for(Int_t i = 0; i < XCUT_NUM; i++){
 
         TString xy_Name  = TString::Format("h_X_HC_XY_cut%d", i);
-        TString xy_Title = TString::Format("HyCal XY Position Run %b - Cut: %s;x [mm]; y [mm]", runNum, XCUT_NAME[i]);
+        TString xy_Title = TString::Format("HyCal XY Position Run %d - Cut: %s;x [mm]; y [mm]", runNum, XCUT_NAME[i].Data());
         h_X_HC_XY[i] = new TH2F(xy_Name, xy_Title, HC_XBINS, HC_XMIN, HC_XMAX, HC_YBINS, HC_YMIN, HC_YMAX);
 
         TString th_Name  = TString::Format("h_X_E_theta_cut%d", i);
-        TString th_Title = TString::Format("Energy v. #theta Run %b - Cut: %s;#theta [#circ]; Energy [MeV]", runNum, XCUT_NAME[i]);
+        TString th_Title = TString::Format("Energy v. #theta Run %d - Cut: %s;#theta [#circ]; Energy [MeV]", runNum, XCUT_NAME[i].Data());
         h_X_E_theta[i] = new TH2F(th_Name, th_Title, TH_BINS, MIN_TH, MAX_TH, Ebeam+200.0, 0.0 ,Ebeam+200.0);
 
         TString invM_Name = TString::Format("h_X_invM_cut%d",i);
-        TString invM_Title = TString::Format("Invariant Mass of Potential Particle 1/3 MeV per bin Run %d - Cut: %s;Mass [MeV/c^{2}]; Count", runNum, XCUT_NAME[i]);
+        TString invM_Title = TString::Format("Invariant Mass of Potential Particle 1/3 MeV per bin Run %d - Cut: %s;Mass [MeV/c^{2}]; Count", runNum, XCUT_NAME[i].Data());
         h_X_invM[i] = new TH1F(invM_Name, invM_Title, INVM_BINS, MIN_INVM, MAX_INVM);
 
         TString sum_pt_Name = TString::Format("h_X_Sum_pt_cut%d", i);
-        TString sum_pt_Title = TString::Format("3 particle #Sigmap_{t} Run %d - Cut: %s;p_{t} [MeV/c];Count", runNum, XCUT_NAME[i]);
-        h_X_Sum_pt[i] = TH1F(sum_pt_Name, sum_pt_Title, PT_BINS, MIN_PT, MAX_PT);
+        TString sum_pt_Title = TString::Format("3 particle #Sigmap_{t} Run %d - Cut: %s;p_{t} [MeV/c];Count", runNum, XCUT_NAME[i].Data());
+        h_X_Sum_pt[i] = new TH1F(sum_pt_Name, sum_pt_Title, PT_BINS, MIN_PT, MAX_PT);
 
         TString sum_pxVpy_Name = TString::Format("h_X_pxVpy_cut%d", i);
-        TString sum_pxVpy_Title = TString::Format("3 particle #Sigmap_{y} v. #Sigmap_{x} Run %d - Cut: %s", runNum, XCUT_NAME[i]);
-        h_X_Sum_pxVpy[i] = TH2F(sum_pxVpy_Name, sum_pxVpy_Title, 2*PT_BINS, -1.0*MAX_PT, MAX_PT, 2*PT_BINS, -1.0*MAX_PT, MAX_PT);
+        TString sum_pxVpy_Title = TString::Format("3 particle #Sigmap_{y} v. #Sigmap_{x} Run %d - Cut: %s;p_{x} [MeV/c];p_{y} [MeV/c]", runNum, XCUT_NAME[i].Data());
+        h_X_Sum_pxVpy[i] = new TH2F(sum_pxVpy_Name, sum_pxVpy_Title, 2*PT_BINS, -1.0*MAX_PT, MAX_PT, 2*PT_BINS, -1.0*MAX_PT, MAX_PT);
 
         TString diffPhi_Name = TString::Format("h_X_diffPhi_cut%d", i);
-        TString diffPhi_Title = TString::Format("#Delta#phi of particle candidate and e' Run %d - Cut: %s", runNum, XCUT_NAME[i]);
+        TString diffPhi_Title = TString::Format("#Delta#phi of particle candidate and e' Run %d - Cut: %s;#Delta#phi [#circ];Count/1#circ", runNum, XCUT_NAME[i].Data());
         h_X_diffPhi[i] = new TH1F(diffPhi_Name, diffPhi_Title, PHI_BINS, MIN_PHI, MAX_PHI);
 
         TString timing_Name = TString::Format("h_X_timing_cut%d", i);
-        TString timing_Title = TString::Format("#Deltat (t_{cl_{max}} - t_{cl_{min}}) Run %d - Cut: %s", runNum, XCUT_NAME[i]);
-        h_X_timing[i] = TH1F(timing_Name, timing_Title, TIME_BINS, MIN_TIME, MAX_TIME);
+        TString timing_Title = TString::Format("#Deltat (t_{cl_{max}} - t_{cl_{min}}) Run %d - Cut: %s;#Deltat [ns]; Count/ns", runNum, XCUT_NAME[i].Data());
+        h_X_timing[i] = new TH1F(timing_Name, timing_Title, TIME_BINS, MIN_TIME, MAX_TIME);
+
+        TString sum_E_Name = TString::Format("h_X_sumE_cut%d", i);
+        TString sum_E_Title = TString::Format("3 particle E_{Sum} Run %d - Cut %s;E_{sum} [MeV]; Count/MeV", runNum, XCUT_NAME[i].Data());
+        h_X_sumE[i] = new TH1F(sum_E_Name, sum_E_Title, Ebeam+500.0, 0.0 ,Ebeam+500.0);
+
+        TString min_E_Name = TString::Format("h_X_minE_cut%d", i);
+        TString min_E_Title = TString::Format("3 paricle Minimum Cluster Energy E_{Min} Run %d - Cut %s;E_{min} [MeV];Count/MeV", runNum, XCUT_NAME[i].Data());
+        h_X_minE[i] = new TH1F(min_E_Name, min_E_Name, Ebeam/2.0, 0.0 ,Ebeam/2.0);
+
+        TString med_E_Name = TString::Format("h_X_medE_cut%d", i);
+        TString med_E_Title = TString::Format("3 paricle Median Cluster Energy E_{Med} Run %d - Cut %s;E_{med} [MeV];Count/MeV", runNum, XCUT_NAME[i].Data());
+        h_X_medE[i] = new TH1F(med_E_Name, med_E_Name, Ebeam, 0.0 ,Ebeam);
+
+        TString max_E_Name = TString::Format("h_X_maxE_cut%d", i);
+        TString max_E_Title = TString::Format("3 paricle Maximum Cluster Energy E_{Max} Run %d - Cut %s;E_{max} [MeV];Count/MeV", runNum, XCUT_NAME[i].Data());
+        h_X_maxE[i] = new TH1F(max_E_Name, max_E_Name, Ebeam, 0.0 ,Ebeam);
 
         for(Int_t j = 0; j < 4; j++){
 
-            TString vZ_Name = TString::Format("h_X_vZ_%s_cut%d",m[j], i);
-            TString vZ_Title = TString::Format("V_{z} %s Run %d - Cut: %s", m[j], runNum, XCUT_NAME[i]);
+            TString vZ_Name = TString::Format("h_X_vZ_%s_cut%d",m[j].Data(), i);
+            TString vZ_Title = TString::Format("V_{z} %s Run %d - Cut: %s", m[j].Data(), runNum, XCUT_NAME[i].Data());
             h_X_vZ[i][j] = new TH1F(vZ_Name, vZ_Title, VZ_BINS, MIN_VZ, MAX_VZ);
         }
     }
+    cout<<"Set up X particle histograms." << endl;
 }
 
 /**
@@ -111,7 +133,6 @@ void MassFinder::setup_X_histos(){
  * @param rootFile - the full path of where to save these histograms to a ROOT file.
  */
 void MassFinder::save_histos(TString rootFile){
-
     TObjArray* arr = new TObjArray(0,0);
 
     for(Int_t i = 0; i < XCUT_NUM; i++){
@@ -122,6 +143,10 @@ void MassFinder::save_histos(TString rootFile){
         (*arr).Add(h_X_Sum_pxVpy[i]);
         (*arr).Add(h_X_diffPhi[i]);
         (*arr).Add(h_X_timing[i]);
+        (*arr).Add(h_X_sumE[i]);
+        (*arr).Add(h_X_minE[i]);
+        (*arr).Add(h_X_medE[i]);
+        (*arr).Add(h_X_maxE[i]);
 
         for(Int_t j = 0; j < 4; j++){
             (*arr).Add(h_X_vZ[i][j]);
@@ -136,6 +161,7 @@ void MassFinder::save_histos(TString rootFile){
         (*arr).Add(h_M_Sum_pxVpy[j]);
         (*arr).Add(h_M_diffPhi[j]);
         (*arr).Add(h_M_timing[j]);
+        (*arr).Add(h_M_sumE[j]);
         (*arr).Add(h_M_vZ[j]);
     }
 
@@ -152,28 +178,36 @@ void MassFinder::search_events_electrons(){
     for(Int_t i = 0; i < entries; i++){
         chain->GetEntry(i);
 
-        for(Int_t j = 0; j < nClust; j++){
+        if((i+1)%10000 == 0 || (entries-i+1)<10000){
+            cout<<"\rEvents searched: " << i+1 << "/" << entries << flush;
+            if(i+1 == entries){
+                cout<<endl;
+            }
+        }
 
+        if(nClust > 10000){continue;} // This deals with odd events where a ridiculous amount of clusters are found.
+
+        for(Int_t j = 0; j < nClust; j++){
             //Fill the angles, direction vector, and 4D energy-momentum vector for this particle
             fillIndInfo(0,j);
 
             //Fills the histograms.
             h_X_HC_XY[0]->Fill(cl_x[j], cl_y[j]);
             h_X_E_theta[0]->Fill(theta[0], cl_E[j]);
-            h_X_Sum_pt[0]->Fill(particle_e.Pt());
-            h_X_Sum_pxVpy[0]->Fill(particle_e.Px());
             if(vZ[0]<90000){h_X_vZ[0][0]->Fill(vZ[0]);} //Only fill histograms that have at least two points to rebuild the vertex to.
             
             for(Int_t k = j + 1; k < nClust; k++){
 
+                if(j == k){cout<< "SCREAM";}
                 //Fill the angles, direction vector, and 4D energy-momentum vector for this particle
-                fillIndInfo(0,k);
+                fillIndInfo(1,k);
 
                 for(Int_t m = k + 1; m < nClust; m++){
 
                     //Fill the angles, direction vector, and 4D energy-momentum vector for this particle
-                    fillIndInfo(0,m);
+                    fillIndInfo(2,m);
 
+                    //if(nClust != 3){continue;}
                     searchXEvent_electron(j, k, m);
                     
                 }
@@ -224,9 +258,9 @@ void MassFinder::searchXEvent_electron(Int_t j, Int_t k, Int_t m){
         fillCutHistos_electron(cut, j,k,m);
 
         //Cut 3 - Require that all clusters within the 2nd half of the first crystal layer and the inner edge of the last. 
-        if(layer[0] > 0 && layer[0] < 17 && layer[1] > 0 && layer[1] < 17 && layer[2] > 0 && layer[2] < 17){
+        if(layer[0] > 0 && layer[0] < 16 && layer[1] > 0 && layer[1] < 16 && layer[2] > 0 && layer[2] < 16){
             cut++;
-            fillCutHistos_electron(j,k,m);
+            fillCutHistos_electron(cut, j, k, m);
 
             //Cut 4 - Require that all clusters have energy above 70 MeV, and below 0.8 times beam energy.
             if(cl_E[j] > 70.0 && cl_E[j] < Ebeam*0.8 && cl_E[k] > 70.0 && cl_E[k] < Ebeam*0.8 && cl_E[m] > 70.0 && cl_E[m] < Ebeam*0.8){
@@ -239,8 +273,8 @@ void MassFinder::searchXEvent_electron(Int_t j, Int_t k, Int_t m){
                     fillCutHistos_electron(cut, j, k, m);
 
                     //Cut 6 - Require that the each invariant mass candidate and the e' are coplanar within 10 degrees.
-                    for(Int_t c = 0; c < 3; c++){
-                        if(TMath::Abs(180-phi_dif[c]) > 15){X_eli.at(b) = -1;}
+                    for(Int_t d = 0; d < 3; d++){
+                        if(TMath::Abs(180-phi_dif[d]) > 15){X_eli.at(d) = -1;}
                     }
                     //Only go deeper into the if statements if there are still elligible candidates.
                     if(!(X_eli.at(0) < 0 && X_eli.at(1) < 0 && X_eli.at(0) < 0)){
@@ -265,6 +299,12 @@ void MassFinder::searchXEvent_electron(Int_t j, Int_t k, Int_t m){
                                 if(twoGEM[0] && twoGEM[1] && twoGEM[2]){
                                         cut++;
                                         fillCutHistos_electron(cut, j, k, m);
+
+                                        //Cut 10 - Require that every particle have a track within 2 meters of the target.
+                                        if(TMath::Abs(vZ[0]) < 2000 && TMath::Abs(vZ[1]) < 2000 && TMath::Abs(vZ[2]) < 2000){
+                                            cut++;
+                                            fillCutHistos_electron(cut, j, k, m);
+                                        }
                                 }
                             }
                         }
@@ -304,33 +344,37 @@ void MassFinder::fillCutHistos_electron(Int_t c, Int_t j, Int_t k, Int_t m){
 
     h_X_HC_XY[c]->Fill(cl_x[m], cl_y[m]);
     h_X_E_theta[c]->Fill(theta[2], cl_E[m]);
+    h_X_sumE[c]->Fill(sum.E());
 
     //Fill the vertex position for each particle and then separate by minimum, median, and maximum energy particle.
     //TString m[4] = {"All", "Min_{E}", "Med_{E}", "Max_{E}"};
     if(vZ[2]<90000){
         h_X_vZ[c][0]->Fill(vZ[2]);
     }
-    Int_t maxE_ind = distance(partEnergies.begin(), partEnergies.max_element(partEnergies.begin(), partEnergies.end()));
+    Int_t maxE_ind = distance(partEnergies.begin(), max_element(partEnergies.begin(), partEnergies.end()));
     if(vZ[maxE_ind]<90000){h_X_vZ[c][3]->Fill(vZ[maxE_ind]);}
 
-    Int_t minE_ind = distance(partEnergies.begin(), partEnergies.min_element(partEnergies.begin(), partEnergies.end()));
+    Int_t minE_ind = distance(partEnergies.begin(), min_element(partEnergies.begin(), partEnergies.end()));
     if(vZ[minE_ind]<90000){h_X_vZ[c][1]->Fill(vZ[minE_ind]);}
     
     Int_t medE_ind = 3 - (maxE_ind + minE_ind);
     if(vZ[medE_ind]<90000){h_X_vZ[c][2]->Fill(vZ[medE_ind]);}
 
+    h_X_maxE[c]->Fill(partEnergies.at(maxE_ind));
+    h_X_minE[c]->Fill(partEnergies.at(minE_ind));
+    h_X_medE[c]->Fill(partEnergies.at(medE_ind));
 
-    for(UInt_t i = 0; i < X_ind.size(); i++){
-        if(X_ind.at(i) < 0) continue;
 
-        h_X_invM[c]->Fill(X[X_ind.at(i)].M());
+    for(Int_t i = 0; i < 3; i++){
+        if(X_eli.at(i) < 0) continue;
 
-        h_X_diffPhi[c]->Fill(phi_dif[X_ind.at(i)]);//TMath::Abs(X_phi[X_ind.at(i)]-phi[ep_ind]));
+        h_X_invM[c]->Fill(X[X_eli.at(i)].M());
+        h_X_diffPhi[c]->Fill(phi_dif[X_eli.at(i)]);//TMath::Abs(X_phi[X_ind.at(i)]-phi[ep_ind]));
     }
 
     h_X_Sum_pt[c]->Fill(sum.Pt());
     h_X_Sum_pxVpy[c]->Fill(sum.Px(), sum.Py());
-    h_X_timing[c]-.Fill(dT);
+    h_X_timing[c]->Fill(dT);
 
 }
 
@@ -345,8 +389,8 @@ void MassFinder::fillCutHistos_electron(Int_t c, Int_t j, Int_t k, Int_t m){
 void MassFinder::findMaxAndMinTime(Int_t j, Int_t k, Int_t m){
     vector<Double_t> times = {cl_time[j], cl_time[k], cl_time[m]};
 
-    maxT = *(times.max_element(time.begin(), time.end()));
-    minT = *(times.min_element(time.begin(), time.end()));
+    maxT = *(max_element(times.begin(), times.end()));
+    minT = *(min_element(times.begin(), times.end()));
 
     dT = maxT - minT;
 }
@@ -392,7 +436,7 @@ void MassFinder::fillIndInfo(Int_t i, Int_t j){
     theta[i] = findTheta(cl_x[j], cl_y[j], cl_z[j]);
     phi[i] = findPhi(cl_x[j], cl_y[j]);
     dir[i] = makeDirVector(cl_x[j], cl_y[j], cl_z[j]);
-    particle_e[i] = make4D_EMomVector_Electron(cl_E[j], dir[0]);
+    particle_e[i] = make4D_EMomVector_Electron(cl_E[j], dir[i]);
     partEnergies.at(i) = cl_E[j];
     layer[i] = hycal_layer(cl_x[j], cl_y[j]);
     close[i] = findVertZ(j);
@@ -426,7 +470,7 @@ void MassFinder::searchMollerEvent(Int_t j, Int_t k){
         fillMollerCutHistos(Mcut, j, k);
 
         //Cut 2 - Require that all clusters within the 2nd half of the first crystal layer and the inner edge of the last. 
-        if(layer[0] > 0 && layer[0] < 17 && layer[1] > 0 && layer[1] < 17){
+        if(layer[0] > 0 && layer[0] < 16 && layer[1] > 0 && layer[1] < 16){
             Mcut++;
             fillMollerCutHistos(Mcut, j, k);
 
@@ -441,7 +485,7 @@ void MassFinder::searchMollerEvent(Int_t j, Int_t k){
                     fillMollerCutHistos(Mcut, j, k);
 
                     //Cut 5 - Require that both clusters add up to being an elastic event given the Energy resolutions added in quadrature.
-                    if(TMath::Abs(cl_E[j] + cl_E[k] - EBeam - m_e) < sigma_E*MsumRes){
+                    if(TMath::Abs(cl_E[j] + cl_E[k] - Ebeam - m_e) < sigma_E*MsumRes){
                         Mcut++;
                         fillMollerCutHistos(Mcut, j, k);
 
@@ -454,6 +498,11 @@ void MassFinder::searchMollerEvent(Int_t j, Int_t k){
                             if(twoGEM[0] && twoGEM[1]){
                                 Mcut++;
                                 fillMollerCutHistos(Mcut, j, k);
+
+                                if(TMath::Abs(vZ[0]) < 2000 && TMath::Abs(vZ[1]) < 2000){
+                                    Mcut++;
+                                    fillMollerCutHistos(Mcut, j, k);
+                                }
                             }
                         }
                     }
@@ -476,7 +525,7 @@ void MassFinder::fillMollerCutHistos(Int_t c, Int_t j, Int_t k){
         h_M_E_theta[c]->Fill(theta[0], cl_E[j]);
 
         if(vZ[0]<90000){
-            h_X_vZ[c]->Fill(vZ[0]);
+            h_M_vZ[c]->Fill(vZ[0]);
         }
     }
 
@@ -490,6 +539,7 @@ void MassFinder::fillMollerCutHistos(Int_t c, Int_t j, Int_t k){
     h_M_timing[c]->Fill(dT_Mol);
     h_M_invM[c]->Fill(Mol.M());
     h_M_Sum_pt[c]->Fill(Mol.Pt());
+    h_M_sumE[c]->Fill(Mol.E());
     h_M_Sum_pxVpy[c]->Fill(Mol.Px(), Mol.Py());
     h_M_diffPhi[c]->Fill(phi_dif_Mol);
 }
@@ -502,37 +552,42 @@ void MassFinder::setup_Moller_histos(){
     for(Int_t i = 0; i < MCUT_NUM; i++){
 
         TString xy_Name  = TString::Format("h_M_HC_XY_cut%d", i);
-        TString xy_Title = TString::Format("Moller HyCal XY Position Run %b - Cut: %s;x [mm]; y [mm]", runNum, XCUT_NAME[i]);
+        TString xy_Title = TString::Format("Moller HyCal XY Position Run %d - Cut: %s;x [mm]; y [mm]", runNum, MCUT_NAME[i].Data());
         h_M_HC_XY[i] = new TH2F(xy_Name, xy_Title, HC_XBINS, HC_XMIN, HC_XMAX, HC_YBINS, HC_YMIN, HC_YMAX);
 
         TString th_Name  = TString::Format("h_M_E_theta_cut%d", i);
-        TString th_Title = TString::Format("Moller Energy v. #theta Run %b - Cut: %s;#theta [#circ]; Energy [MeV]", runNum, XCUT_NAME[i]);
+        TString th_Title = TString::Format("Moller Energy v. #theta Run %d - Cut: %s;#theta [#circ]; Energy [MeV]", runNum, MCUT_NAME[i].Data());
         h_M_E_theta[i] = new TH2F(th_Name, th_Title, TH_BINS, MIN_TH, MAX_TH, Ebeam+200.0, 0.0 ,Ebeam+200.0);
 
         TString invM_Name = TString::Format("h_M_invM_cut%d",i);
-        TString invM_Title = TString::Format("Moller Invariant Mass of Potential Particle 1/3 MeV per bin Run %d - Cut: %s;Mass [MeV/c^{2}]; Count", runNum, XCUT_NAME[i]);
+        TString invM_Title = TString::Format("Moller Invariant Mass of Potential Particle 1/3 MeV per bin Run %d - Cut: %s;Mass [MeV/c^{2}]; Count", runNum, MCUT_NAME[i].Data());
         h_M_invM[i] = new TH1F(invM_Name, invM_Title, INVM_BINS, MIN_INVM, MAX_INVM);
 
         TString sum_pt_Name = TString::Format("h_M_Sum_pt_cut%d", i);
-        TString sum_pt_Title = TString::Format("Moller 2 particle #Sigmap_{t} Run %d - Cut: %s;p_{t} [MeV/c];Count", runNum, XCUT_NAME[i]);
-        h_M_Sum_pt[i] = TH1F(sum_pt_Name, sum_pt_Title, PT_BINS, MIN_PT, MAX_PT);
+        TString sum_pt_Title = TString::Format("Moller 2 particle #Sigmap_{t} Run %d - Cut: %s;p_{t} [MeV/c];Count", runNum, MCUT_NAME[i].Data());
+        h_M_Sum_pt[i] = new TH1F(sum_pt_Name, sum_pt_Title, PT_BINS, MIN_PT, MAX_PT);
 
         TString sum_pxVpy_Name = TString::Format("h_M_pxVpy_cut%d", i);
-        TString sum_pxVpy_Title = TString::Format("Moller 2 particle #Sigmap_{y} v. #Sigmap_{x} Run %d - Cut: %s", runNum, XCUT_NAME[i]);
-        h_M_Sum_pxVpy[i] = TH2F(sum_pxVpy_Name, sum_pxVpy_Title, 2*PT_BINS, -1.0*MAX_PT, MAX_PT, 2*PT_BINS, -1.0*MAX_PT, MAX_PT);
+        TString sum_pxVpy_Title = TString::Format("Moller 2 particle #Sigmap_{y} v. #Sigmap_{x} Run %d - Cut: %s;p_{x};p_{y}", runNum, MCUT_NAME[i].Data());
+        h_M_Sum_pxVpy[i] = new TH2F(sum_pxVpy_Name, sum_pxVpy_Title, 2*PT_BINS, -1.0*MAX_PT, MAX_PT, 2*PT_BINS, -1.0*MAX_PT, MAX_PT);
 
         TString diffPhi_Name = TString::Format("h_M_diffPhi_cut%d", i);
-        TString diffPhi_Title = TString::Format("Moller #Delta#phi of particle candidate and e' Run %d - Cut: %s", runNum, XCUT_NAME[i]);
+        TString diffPhi_Title = TString::Format("Moller #Delta#phi of particle candidate and e' Run %d - Cut: %s;#Delta#phi [#circ];Count/1#circ", runNum, MCUT_NAME[i].Data());
         h_M_diffPhi[i] = new TH1F(diffPhi_Name, diffPhi_Title, PHI_BINS, MIN_PHI, MAX_PHI);
 
         TString timing_Name = TString::Format("h_M_timing_cut%d", i);
-        TString timing_Title = TString::Format("Moller #Deltat (t_{cl_{max}} - t_{cl_{min}}) Run %d - Cut: %s", runNum, XCUT_NAME[i]);
-        h_M_timing[i] = TH1F(timing_Name, timing_Title, TIME_BINS, MIN_TIME, MAX_TIME);
+        TString timing_Title = TString::Format("Moller #Deltat (t_{cl_{max}} - t_{cl_{min}}) Run %d - Cut: %s;#Deltat [ns]; Count/ns", runNum, MCUT_NAME[i].Data());
+        h_M_timing[i] = new TH1F(timing_Name, timing_Title, TIME_BINS, MIN_TIME, MAX_TIME);
        
         TString vZ_Name = TString::Format("h_M_vZ_cut%d", i);
-        TString vZ_Title = TString::Format("Moller V_{z} Run %d - Cut: %s", runNum, XCUT_NAME[i]);
+        TString vZ_Title = TString::Format("Moller V_{z} Run %d - Cut: %s", runNum, MCUT_NAME[i].Data());
         h_M_vZ[i] = new TH1F(vZ_Name, vZ_Title, VZ_BINS, MIN_VZ, MAX_VZ);
+
+        TString sum_E_Name = TString::Format("h_M_sumE_cut%d", i);
+        TString sum_E_Title = TString::Format("Moller 2 particle E_{Sum} Run %d - Cut %s;E_{sum} [MeV]; Count/MeV", runNum, MCUT_NAME[i].Data());
+        h_M_sumE[i] = new TH1F(sum_E_Name, sum_E_Title, Ebeam+200.0, 0.0 ,Ebeam+200.0);
     }
+    cout<<"Set up Moller histograms." << endl;
 }
 
 void MassFinder::delete_histos(){
@@ -544,6 +599,10 @@ void MassFinder::delete_histos(){
         delete h_X_Sum_pxVpy[i];
         delete h_X_diffPhi[i];
         delete h_X_timing[i];
+        delete h_X_sumE[i];
+        delete h_X_minE[i];
+        delete h_X_medE[i];
+        delete h_X_maxE[i];
 
         for(Int_t j = 0; j < 4; j++){
             delete h_X_vZ[i][j];
@@ -559,5 +618,6 @@ void MassFinder::delete_histos(){
         delete h_M_diffPhi[j];
         delete h_M_timing[j];
         delete h_M_vZ[j];
+        delete h_M_sumE[j];
     }
 }

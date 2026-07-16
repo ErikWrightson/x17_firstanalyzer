@@ -74,6 +74,7 @@ class Utils{
         static TChain* makeChain(vector<TString> names, TString treeName);
         static void makeNeighborMap(string dbName, map<string, vector<string>> &m, map<Int_t, vector<Int_t>> &m2);
         static void makeGainMap(string dbName, map<string, Float_t> &m, map<Int_t, Float_t> &m2);
+        static Int_t extractFirstInt(const TString& str);
 
 };
 

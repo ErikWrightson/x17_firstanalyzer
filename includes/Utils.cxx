@@ -16,6 +16,7 @@ void Utils::printUsage(const char *prog){
     cerr << "Usage: " << prog << " [options]\n"
               << "\t-f <fileName> input root file in the PRad-II/X17 reconstructed format\n"
               << "\t-L <listFileName> input text file containing a list of root files in the PRadII-X17 format\n"
+              << "\t-b <runNumber> input the run Number"
               << "\t-h Show this help\n"
               << "\tNOTE: Either option -f or -L are REQUIRED for running properly.\n";
 }
@@ -206,4 +207,33 @@ Utils::Point Utils::ClosestApproachToZAxis(Utils::LineOfBestFit line){
     p.z = line.z0 + t*line.vz;
 
     return p;
+}
+
+/**
+ * Extracts the first continuous set of numbers in the provided TString.
+ *
+ * @param str - a call by reference to the TString object to search
+ *
+ * @return - the first continuous set of numbers in the string converted to an Int_t
+ */
+Int_t Utils::extractFirstInt(const TString& str){
+    TString digits = "";
+
+    bool foundDigit = false;
+
+    for (int i = 0; i < str.Length(); i++) {
+        if (str[i] >= '0' && str[i] <= '9') {
+            digits += str[i];
+            foundDigit = true;
+        } 
+        else if (foundDigit && digits.Length() > 4) {
+            break;  // stop after the first continuous block with more than 4 digits
+        }
+        else if(foundDigit && digits.Length() <= 4){
+            foundDigit = false;
+            digits = "";
+        }
+    }
+
+    return foundDigit ? digits.Atoi() : -1;
 }
