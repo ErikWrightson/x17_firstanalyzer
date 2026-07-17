@@ -198,7 +198,6 @@ void MassFinder::search_events_electrons(){
             
             for(Int_t k = j + 1; k < nClust; k++){
 
-                if(j == k){cout<< "SCREAM";}
                 //Fill the angles, direction vector, and 4D energy-momentum vector for this particle
                 fillIndInfo(1,k);
 
@@ -212,7 +211,7 @@ void MassFinder::search_events_electrons(){
                     
                 }
 
-                searchMollerEvent(j, k);
+                if(nClust == 2) searchMollerEvent(j, k);
             }
         }
     }
@@ -474,8 +473,8 @@ void MassFinder::searchMollerEvent(Int_t j, Int_t k){
             Mcut++;
             fillMollerCutHistos(Mcut, j, k);
 
-            //Cut 3 - Require that all clusters pass the expected Moller Energy cut for the angle they are at. 
-            if(TMath::Abs(cl_E[j]-exp_E[0]) < sigma_E*EnergyRes(exp_E[0]) && TMath::Abs(cl_E[k]-exp_E[1]) < sigma_E*EnergyRes(exp_E[1])){
+            //This cut has been removed: Cut 3 - Require that all clusters pass the expected Moller Energy cut for the angle they are at. 
+            if(true){//TMath::Abs(cl_E[j]-exp_E[0]) < sigma_E*EnergyRes(exp_E[0]) && TMath::Abs(cl_E[k]-exp_E[1]) < sigma_E*EnergyRes(exp_E[1])){
                 Mcut++;
                 fillMollerCutHistos(Mcut, j, k);
 
