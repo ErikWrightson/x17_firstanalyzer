@@ -200,7 +200,7 @@ def main():
     # ------------------------------------------------------------------ #
     # 2. hadd outputs                                                      #
     # ------------------------------------------------------------------ #
-    out_pattern    = os.path.join(out_dir, f"x17_Ana_{run_str}_*.root")
+    out_pattern    = os.path.join(out_dir, f"x17_Ana_{run_str}_[0-9]*.root")
     individual_outputs = sorted(glob.glob(out_pattern))
     # Exclude the merged file from the inputs in case of a re-run
     merged_path    = os.path.join(out_dir, f"x17_Ana_{run_str}_All.root")

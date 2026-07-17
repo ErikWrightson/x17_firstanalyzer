@@ -82,7 +82,7 @@ void MassFinder::setup_X_histos(){
         h_X_E_theta[i] = new TH2F(th_Name, th_Title, TH_BINS, MIN_TH, MAX_TH, Ebeam+200.0, 0.0 ,Ebeam+200.0);
 
         TString invM_Name = TString::Format("h_X_invM_cut%d",i);
-        TString invM_Title = TString::Format("Invariant Mass of Potential Particle 1/3 MeV per bin Run %d - Cut: %s;Mass [MeV/c^{2}]; Count", runNum, XCUT_NAME[i].Data());
+        TString invM_Title = TString::Format("Invariant Mass of Potential Particle 0.5 MeV per bin Run %d - Cut: %s;Mass [MeV/c^{2}]; Count", runNum, XCUT_NAME[i].Data());
         h_X_invM[i] = new TH1F(invM_Name, invM_Title, INVM_BINS, MIN_INVM, MAX_INVM);
 
         TString sum_pt_Name = TString::Format("h_X_Sum_pt_cut%d", i);
@@ -106,16 +106,16 @@ void MassFinder::setup_X_histos(){
         h_X_sumE[i] = new TH1F(sum_E_Name, sum_E_Title, Ebeam+500.0, 0.0 ,Ebeam+500.0);
 
         TString min_E_Name = TString::Format("h_X_minE_cut%d", i);
-        TString min_E_Title = TString::Format("3 paricle Minimum Cluster Energy E_{Min} Run %d - Cut %s;E_{min} [MeV];Count/MeV", runNum, XCUT_NAME[i].Data());
-        h_X_minE[i] = new TH1F(min_E_Name, min_E_Name, Ebeam/2.0, 0.0 ,Ebeam/2.0);
+        TString min_E_Title = TString::Format("3 particle Minimum Cluster Energy E_{Min} Run %d - Cut %s;E_{min} [MeV];Count/MeV", runNum, XCUT_NAME[i].Data());
+        h_X_minE[i] = new TH1F(min_E_Name, min_E_Title, Ebeam/2.0, 0.0 ,Ebeam/2.0);
 
         TString med_E_Name = TString::Format("h_X_medE_cut%d", i);
-        TString med_E_Title = TString::Format("3 paricle Median Cluster Energy E_{Med} Run %d - Cut %s;E_{med} [MeV];Count/MeV", runNum, XCUT_NAME[i].Data());
-        h_X_medE[i] = new TH1F(med_E_Name, med_E_Name, Ebeam, 0.0 ,Ebeam);
+        TString med_E_Title = TString::Format("3 particle Median Cluster Energy E_{Med} Run %d - Cut %s;E_{med} [MeV];Count/MeV", runNum, XCUT_NAME[i].Data());
+        h_X_medE[i] = new TH1F(med_E_Name, med_E_Title, Ebeam, 0.0 ,Ebeam);
 
         TString max_E_Name = TString::Format("h_X_maxE_cut%d", i);
-        TString max_E_Title = TString::Format("3 paricle Maximum Cluster Energy E_{Max} Run %d - Cut %s;E_{max} [MeV];Count/MeV", runNum, XCUT_NAME[i].Data());
-        h_X_maxE[i] = new TH1F(max_E_Name, max_E_Name, Ebeam, 0.0 ,Ebeam);
+        TString max_E_Title = TString::Format("3 particle Maximum Cluster Energy E_{Max} Run %d - Cut %s;E_{max} [MeV];Count/MeV", runNum, XCUT_NAME[i].Data());
+        h_X_maxE[i] = new TH1F(max_E_Name, max_E_Title, Ebeam, 0.0 ,Ebeam);
 
         for(Int_t j = 0; j < 4; j++){
 
@@ -580,7 +580,7 @@ void MassFinder::setup_Moller_histos(){
         h_M_timing[i] = new TH1F(timing_Name, timing_Title, TIME_BINS, MIN_TIME, MAX_TIME);
        
         TString vZ_Name = TString::Format("h_M_vZ_cut%d", i);
-        TString vZ_Title = TString::Format("Moller V_{z} Run %d - Cut: %s", runNum, MCUT_NAME[i].Data());
+        TString vZ_Title = TString::Format("Moller V_{z} Run %d - Cut: %s; z [mm]; Count/1cm", runNum, MCUT_NAME[i].Data());
         h_M_vZ[i] = new TH1F(vZ_Name, vZ_Title, VZ_BINS, MIN_VZ, MAX_VZ);
 
         TString sum_E_Name = TString::Format("h_M_sumE_cut%d", i);

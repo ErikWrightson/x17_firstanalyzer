@@ -74,11 +74,11 @@ class MassFinder{
 
         static constexpr Double_t HC_XMIN = -400.0;
         static constexpr Double_t HC_XMAX = 400.0;
-        static constexpr Double_t HC_XBINS = (HC_XMAX - HC_XMIN);
+        static constexpr Double_t HC_XBINS = (HC_XMAX - HC_XMIN)/4.0;
 
         static constexpr Double_t HC_YMIN = -400.0;
         static constexpr Double_t HC_YMAX = 400.0;
-        static constexpr Double_t HC_YBINS = (HC_YMAX - HC_YMIN);
+        static constexpr Double_t HC_YBINS = (HC_YMAX - HC_YMIN)/4.0;
 
         static constexpr Double_t MIN_TH = 0.0;
         static constexpr Double_t MAX_TH = 5.0;
@@ -86,7 +86,7 @@ class MassFinder{
 
         static constexpr Double_t MIN_INVM = 0.0;
         static constexpr Double_t MAX_INVM = 60.0;
-        Double_t INVM_BINS = (MAX_INVM - MIN_INVM)*3.0;
+        Double_t INVM_BINS = (MAX_INVM - MIN_INVM)*2.0;
 
         static constexpr Double_t MIN_PT = 0.0;
         static constexpr Double_t MAX_PT = 40.0;
