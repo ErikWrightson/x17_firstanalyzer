@@ -111,7 +111,7 @@ int main (int argc, char **argv){
     
     MassFinder mass = MassFinder(fChain, rN);
 
-    mass.search_events_electrons();
+    mass.search_events();
     mass.save_histos(fn + ".root");
     mass.delete_histos();
 

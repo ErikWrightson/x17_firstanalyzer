@@ -63,8 +63,11 @@ class MassFinder{
         static constexpr Int_t XCUT_NUM = 11;
         static const TString XCUT_NAME[XCUT_NUM];
 
-        static constexpr Int_t MCUT_NUM = 9;
+        static constexpr Int_t MCUT_NUM = 8;
         static const TString MCUT_NAME[MCUT_NUM];
+
+        static constexpr Int_t XGGCUT_NUM = 12;
+        static const TString XGGCUT_NAME[XGGCUT_NUM];
 
 
         static constexpr Int_t  MAX_CLUSTERS = 10000;      //Maximum number of clusters.
@@ -154,7 +157,7 @@ class MassFinder{
         Float_t matchGEMz[MAX_CLUSTERS][2];
 
         MassFinder(TChain* c, Int_t rN);
-        void search_events_electrons();
+        void search_events();
         void save_histos(TString rootFile);
         void delete_histos();
 
@@ -169,6 +172,7 @@ class MassFinder{
         Double_t phi[3];
         DirVector dir[3];
         LorentzV particle_e[3];
+        LorentzV particle_g[3];
         Int_t layer[3];
         vector<Double_t> partEnergies;
         Double_t numMatches[3];
@@ -177,6 +181,7 @@ class MassFinder{
         bool oneGEM[3];
         bool twoGEM[3];
         Int_t cut;
+        Int_t cut_gg;
         Double_t maxT;
         Double_t minT;
         Double_t dT;
@@ -188,9 +193,23 @@ class MassFinder{
         Double_t phi_dif[3];
         vector<Int_t> X_eli;
 
-        //Relevant values for the sum of all 3 candidate particles.
+        //Relevant values for the sum of all 3 candidate particles if all are e+ or e-
         Double_t sumRes;
         LorentzV sum;
+
+        //Relevant values of potential X particles with gamma gamma decay
+        LorentzV Xgg[3];
+        Double_t Xgg_th[3];
+        Double_t Xgg_phi[3];
+        Double_t phi_dif_gg[3];
+        bool Xgg_match[3];
+        vector<Int_t> Xgg_eli;
+
+        //Relevant values for the sum of all 3 candidate particles with gamma gamma decay
+        Double_t sumResGG[3];
+        LorentzV sumGG[3];
+
+        
 
         LorentzV Mol;
         Double_t MsumRes;
@@ -212,6 +231,20 @@ class MassFinder{
         TH1F* h_X_medE[XCUT_NUM];
         TH1F* h_X_maxE[XCUT_NUM];
 
+        //X histograms
+        TH2F* h_Xgg_HC_XY[XGGCUT_NUM];
+        TH2F* h_Xgg_E_theta[XGGCUT_NUM];
+        TH1F* h_Xgg_invM[XGGCUT_NUM];
+        TH1F* h_Xgg_Sum_pt[XGGCUT_NUM];
+        TH2F* h_Xgg_Sum_pxVpy[XGGCUT_NUM];
+        TH1F* h_Xgg_vZ[XGGCUT_NUM][4];
+        TH1F* h_Xgg_diffPhi[XGGCUT_NUM];
+        TH1F* h_Xgg_timing[XGGCUT_NUM];
+        TH1F* h_Xgg_sumE[XGGCUT_NUM];
+        TH1F* h_Xgg_minE[XGGCUT_NUM];
+        TH1F* h_Xgg_medE[XGGCUT_NUM];
+        TH1F* h_Xgg_maxE[XGGCUT_NUM];
+
         //Moller histograms
         TH2F* h_M_HC_XY[MCUT_NUM];
         TH2F* h_M_E_theta[MCUT_NUM];
@@ -223,16 +256,24 @@ class MassFinder{
         TH1F* h_M_timing[MCUT_NUM];
         TH1F* h_M_sumE[MCUT_NUM];
 
+        //Private X functions expecting a e+e- decay
         void setup_X_histos();
         void searchXEvent_electron(Int_t j, Int_t k, Int_t m);
         void fillCutHistos_electron(Int_t c, Int_t j, Int_t k, Int_t m);
-        void findMaxAndMinTime(Int_t j, Int_t k, Int_t m);
-        Utils::Point findVertZ(Int_t j);
-        void fillIndInfo(Int_t i, Int_t j);
 
+        //Private X functions expecting a gamma-gamma decay
+        void setup_Xgg_histos();
+        void searchXEvent_photon(Int_t j, Int_t k, Int_t m);
+        void fillCutHistos_photon(Int_t c, Int_t j, Int_t k, Int_t m);
+
+        //Private Moller functions
         void setup_Moller_histos();
         void searchMollerEvent(Int_t j, Int_t k);
         void fillMollerCutHistos(Int_t c, Int_t j, Int_t k);
+
+        void findMaxAndMinTime(Int_t j, Int_t k, Int_t m);
+        Utils::Point findVertZ(Int_t j);
+        void fillIndInfo(Int_t i, Int_t j);
 
 };
 
