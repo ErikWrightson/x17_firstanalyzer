@@ -10,7 +10,7 @@ A'/Protophobic Boson-like: e<sup>−</sup>+Ta $\rightarrow$ e<sup>−</sup> + X 
 </figure>
 <b>
 QED Meson-like: e<sup>−</sup>+Ta $\rightarrow$ e<sup>−</sup> + X + Ta $\rightarrow$ e<sup>−</sup> + &gamma; + &gamma; + Ta (assuming X→&gamma; + &gamma;)
-</b>
+</b><br>
 <b>
 Moller (for mass resolution): 𝒆<sup>−</sup>+ Ta $\rightarrow$ 𝒆<sup>−</sup>+ Ta<sup>+</sup> + 𝒆<sup>−</sup>
 </b><br>
