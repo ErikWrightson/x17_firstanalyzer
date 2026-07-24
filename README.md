@@ -12,7 +12,7 @@ A'/Protophobic Boson-like: e<sup>−</sup>+Ta $\rightarrow$ e<sup>−</sup> + X 
 QED Meson-like: e<sup>−</sup>+Ta $\rightarrow$ e<sup>−</sup> + X + Ta $\rightarrow$ e<sup>−</sup> + &gamma; + &gamma; + Ta (assuming X→&gamma; + &gamma;)
 </b><br>
 <b>
-Moller (for mass resolution): 𝒆<sup>−</sup>+ Ta $\rightarrow$ 𝒆<sup>−</sup>+ Ta<sup>+</sup> + 𝒆<sup>−</sup>
+M&oslash;ller (for mass resolution): 𝒆<sup>−</sup>+ Ta $\rightarrow$ 𝒆<sup>−</sup>+ Ta<sup>+</sup> + 𝒆<sup>−</sup>
 </b><br>
 <figure>
 <img src="images/MollerFeynman.jpg" alt="Moller Feynman Diagram" width="200"/>
