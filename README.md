@@ -95,8 +95,8 @@ for after which cut this histogram shows the information according to the tables
 |:----:|:------:|:----------:|:---------:|:-----------------:|
 |HyCal Position|HC_XY|TH2F|(X,Y) position of each cluster still with at least one X candidate elligible after the most recent cut.|✔|
 |Energy v. Polar Angle (&theta;)|E_theta|TH2F|(E,&theta;) for each cluster still with at least one X candidate elligible after the most recent cut.|✔|
-|$P_t$:<br> Transverse Momentum Sum*|Sum_pt|TH1F|Transverse Monmentum of the sum of the 3 particle's Energy-Momentum four-vectors|✔|
-|$P_x$ v. $P_y$:<br> X and Y Momentum Sum*|Sum_pxVpy|TH1F|($p_x$, $p_y$) coordinates for the X and Y components of the 3 particle's Energy-Momentum four-vectors|✔|
+|$p_t$:<br> Transverse Momentum Sum*|Sum_pt|TH1F|Transverse Monmentum of the sum of the 3 particle's Energy-Momentum four-vectors|✔|
+|$p_x$ v. $p_y$:<br> X and Y Momentum Sum*|Sum_pxVpy|TH1F|($p_x$, $p_y$) coordinates for the X and Y components of the 3 particle's Energy-Momentum four-vectors|✔|
 
 <b>\* - the momentum variables for the &gamma; &gamma; decay show the momentum sum for each still elligible candidate particle, since the momentum sums vary depending which two particles are assumed to be the photons. 
 
