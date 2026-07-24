@@ -12,6 +12,7 @@ from ROOT import kCyan
 from ROOT import kSpring
 from ROOT import gPad
 from ROOT import gStyle
+from pathlib import Path
 
 ROOT.gErrorIgnoreLevel = ROOT.kWarning
 
@@ -254,11 +255,12 @@ def printXPdf(X_histos, X_pdfName, lC, fo):
         c.Clear()
 
         #Invariant Mass - LiveCharge Normalized
-        mass_histos_scaled[i].Draw("HIST")
-        intLabel.DrawLatex(0.4, 0.8, f"17 MeV #pm 0.5 = {massIntegrals_scaled[0][i]:,.1f}")
-        intLabel.DrawLatex(0.4, 0.75, f"17 MeV #pm 1.0 = {massIntegrals_scaled[1][i]:,.1f}")
-        intLabel.DrawLatex(0.4, 0.7, f"17 MeV #pm 1.5 = {massIntegrals_scaled[2][i]:,.1f}")
-        intLabel.DrawLatex(0.4, 0.65, f"17 MeV #pm 2.5 = {massIntegrals_scaled[3][i]:,.1f}")
+        if(lC < 0.9):   
+            mass_histos_scaled[i].Draw("HIST")
+            intLabel.DrawLatex(0.4, 0.8, f"17 MeV #pm 0.5 = {massIntegrals_scaled[0][i]:,.1f}")
+            intLabel.DrawLatex(0.4, 0.75, f"17 MeV #pm 1.0 = {massIntegrals_scaled[1][i]:,.1f}")
+            intLabel.DrawLatex(0.4, 0.7, f"17 MeV #pm 1.5 = {massIntegrals_scaled[2][i]:,.1f}")
+            intLabel.DrawLatex(0.4, 0.65, f"17 MeV #pm 2.5 = {massIntegrals_scaled[3][i]:,.1f}")
         c.Print(X_pdfName)
         c.Clear()
         
@@ -480,12 +482,13 @@ def printXPdf_reduced(X_histos, X_pdfName, lC, fo):
         intLabel.DrawLatex(0.4, 0.7, f"17 MeV #pm 1.5 = {massIntegrals[2][i]:,.1f}")
         intLabel.DrawLatex(0.4, 0.65, f"17 MeV #pm 2.5 = {massIntegrals[3][i]:,.1f}")
         #Invariant Mass - LiveCharge Normalized
-        c.cd(2)
-        mass_histos_scaled[i].Draw("HIST")
-        intLabel.DrawLatex(0.4, 0.8, f"17 MeV #pm 0.5 = {massIntegrals_scaled[0][i]:,.1f}")
-        intLabel.DrawLatex(0.4, 0.75, f"17 MeV #pm 1.0 = {massIntegrals_scaled[1][i]:,.1f}")
-        intLabel.DrawLatex(0.4, 0.7, f"17 MeV #pm 1.5 = {massIntegrals_scaled[2][i]:,.1f}")
-        intLabel.DrawLatex(0.4, 0.65, f"17 MeV #pm 2.5 = {massIntegrals_scaled[3][i]:,.1f}")
+        if (lC < 0.9):
+            c.cd(2)
+            mass_histos_scaled[i].Draw("HIST")
+            intLabel.DrawLatex(0.4, 0.8, f"17 MeV #pm 0.5 = {massIntegrals_scaled[0][i]:,.1f}")
+            intLabel.DrawLatex(0.4, 0.75, f"17 MeV #pm 1.0 = {massIntegrals_scaled[1][i]:,.1f}")
+            intLabel.DrawLatex(0.4, 0.7, f"17 MeV #pm 1.5 = {massIntegrals_scaled[2][i]:,.1f}")
+            intLabel.DrawLatex(0.4, 0.65, f"17 MeV #pm 2.5 = {massIntegrals_scaled[3][i]:,.1f}")
         c.Print(X_pdfName)
         c.Clear()
         
@@ -865,12 +868,13 @@ def printXGGPdf_reduced(X_histos, X_pdfName, lC, fo):
         intLabel.DrawLatex(0.4, 0.7, f"17 MeV #pm 1.5 = {massIntegrals[2][i]:,.1f}")
         intLabel.DrawLatex(0.4, 0.65, f"17 MeV #pm 2.5 = {massIntegrals[3][i]:,.1f}")
         #Invariant Mass - LiveCharge Normalized
-        c.cd(2)
-        mass_histos_scaled[i].Draw("HIST")
-        intLabel.DrawLatex(0.4, 0.8, f"17 MeV #pm 0.5 = {massIntegrals_scaled[0][i]:,.1f}")
-        intLabel.DrawLatex(0.4, 0.75, f"17 MeV #pm 1.0 = {massIntegrals_scaled[1][i]:,.1f}")
-        intLabel.DrawLatex(0.4, 0.7, f"17 MeV #pm 1.5 = {massIntegrals_scaled[2][i]:,.1f}")
-        intLabel.DrawLatex(0.4, 0.65, f"17 MeV #pm 2.5 = {massIntegrals_scaled[3][i]:,.1f}")
+        if (lC < 0.9):
+            c.cd(2)
+            mass_histos_scaled[i].Draw("HIST")
+            intLabel.DrawLatex(0.4, 0.8, f"17 MeV #pm 0.5 = {massIntegrals_scaled[0][i]:,.1f}")
+            intLabel.DrawLatex(0.4, 0.75, f"17 MeV #pm 1.0 = {massIntegrals_scaled[1][i]:,.1f}")
+            intLabel.DrawLatex(0.4, 0.7, f"17 MeV #pm 1.5 = {massIntegrals_scaled[2][i]:,.1f}")
+            intLabel.DrawLatex(0.4, 0.65, f"17 MeV #pm 2.5 = {massIntegrals_scaled[3][i]:,.1f}")
         c.Print(X_pdfName)
         c.Clear()
         
@@ -887,9 +891,11 @@ if __name__ == "__main__":
     lC = 1
     if len(sys.argv) >= 3:
         live_chargeFile = sys.argv[2]
-        with open(live_chargeFile) as f:
-            liveChargeData = json.load(f)
-        lC = liveChargeData.get("value_nC")/1000000.0 #get the livecharge in mC
+        fp = Path(live_chargeFile)
+        if fp.is_file():
+            with open(live_chargeFile) as f:
+                liveChargeData = json.load(f)
+            lC = liveChargeData.get("value_nC")/1000000.0 #get the livecharge in mC
     print()
     print(lC)
     print()
@@ -922,6 +928,9 @@ if __name__ == "__main__":
 
     for name, h in all_histograms.items():
         h.GetYaxis().SetTitleOffset(1.5)
+        #title = h.GetTitle()
+        #newTitle = title[:title.rfind('5')] + " & 25667" + title[title.rfind('5')+1:]
+        #h.SetTitle(newTitle)
 
     X_histos = [hist for name, hist in all_histograms.items() if "_X_" in name]
     printXPdf(X_histos, X_pdfName, lC, fiducial_option)

@@ -2,7 +2,7 @@
  * Header file for MassFinder class that is used for finding the invariant mass and other distributions before and after each cut for X17.
  *
  * @author Erik Wrightson <wrightso@jlab.org>
- * @version 07.13.2026
+ * @version 07.22.2026
  * @creation 07.13.2026
  */
 
