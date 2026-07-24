@@ -98,7 +98,7 @@ for after which cut this histogram shows the information according to the tables
 |$P_t$:<br> Transverse Momentum Sum*|Sum_pt|TH1F|Transverse Monmentum of the sum of the 3 particle's Energy-Momentum four-vectors|✔|
 |$P_x$ v. $P_y$:<br> X and Y Momentum Sum*|Sum_pxVpy|TH1F|($p_x$, $p_y$) coordinates for the X and Y components of the 3 particle's Energy-Momentum four-vectors|✔|
 
-<b>\* - the Momentum variables for the &gamma; &gamma; decay show the momentum sum for each still elligible candidate particle, since the momentum sums vary depending which two particles are assumed to be the photons. 
+<b>\* - the momentum variables for the &gamma; &gamma; decay show the momentum sum for each still elligible candidate particle, since the momentum sums vary depending which two particles are assumed to be the photons. 
 
 \*\* - The "Also M&oslash;ller?" column indicates histograms that are also filled for M&oslash;ller before and after each cut.
 </b>
