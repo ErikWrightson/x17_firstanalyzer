@@ -100,7 +100,7 @@ for after which cut this histogram shows the information according to the tables
 
 <b>\* - the Momentum variables for the &gamma; &gamma; decay show the momentum sum for each still elligible candidate particle, since the momentum sums vary depending which two particles are assumed to be the photons. 
 
-\*\*
+\*\* - The "Also M&oslash;ller?" column indicates histograms that are also filled for M&oslash;ller before and after each cut.
 </b>
 
 To be completed
