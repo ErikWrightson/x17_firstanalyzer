@@ -3,7 +3,7 @@ This repository takes in reconstructed experimental data from the PRad Collabora
 <div align="center">
 <b>
 A'/Protophobic Boson-like: e<sup>−</sup>+Ta $\rightarrow$ e<sup>−</sup> + X + Ta $\rightarrow$ e<sup>−</sup> + e<sup>+</sup> + e<sup>−</sup>+ Ta (assuming X→e^+^e^-^)
-</b>
+</b><br>
 <figure>
 <img src="images/X17Brem.jpg" alt="Moller Feynman Diagram" width="200"/>
 <figcaption><p style="font-size: 10px;"><i>Bremsstrahlung-like X particle generation diagram.</i></p></figcaption>
@@ -13,7 +13,7 @@ QED Meson-like: e<sup>−</sup>+Ta $\rightarrow$ e<sup>−</sup> + X + Ta $\righ
 </b>
 <b>
 Moller (for mass resolution): 𝒆<sup>−</sup>+ Ta $\rightarrow$ 𝒆<sup>−</sup>+ Ta<sup>+</sup> + 𝒆<sup>−</sup>
-</b>
+</b><br>
 <figure>
 <img src="images/MollerFeynman.jpg" alt="Moller Feynman Diagram" width="200"/>
 <figcaption><p style="font-size: 10px;"><i>M&oslash;ller process Feynman diagram.</i></p></figcaption>
