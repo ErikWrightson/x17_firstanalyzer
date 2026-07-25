@@ -97,10 +97,18 @@ for after which cut this histogram shows the information according to the tables
 |Energy v. Polar Angle (&theta;)|E_theta|TH2F|(E,&theta;) for each cluster still with at least one X candidate elligible after the most recent cut.|✔|
 |$p_t$:<br> Transverse Momentum Sum*|Sum_pt|TH1F|Transverse Monmentum of the sum of the 3 particle's Energy-Momentum four-vectors|✔|
 |$p_x$ v. $p_y$:<br> X and Y Momentum Sum*|Sum_pxVpy|TH1F|($p_x$, $p_y$) coordinates for the X and Y components of the 3 particle's Energy-Momentum four-vectors|✔|
+|$\Delta\phi_{X-e'}$<br> Difference in $\phi$|diffPhi|TH1F|$\lvert\phi_X - \phi_e'\rvert$<br> $\phi$ difference between the candidate particle and the assumed e' in $^\circ$|✔|
+|$\Delta t$<br>Timing|timing|TH1F|$t_{max}-t_{min}$<br>maximum difference in timing between clusters being considered in each combination of 3.|✔|
+|$z$<br>vertex z of all possible|vZ_All|TH1F|$z$<br>vertex z of all the possible particles for each event that still has elligible candidates|✔|
+|$z_{E_{min}}$<br>vertex z of minimum energy cluster|vZ_Min_E|TH1F|$z$<br>vertex z of the minimum energy cluster for each still elligible candidate|X|
+|$z_{E_{med}}$<br>vertex z of median energy cluster|vZ_Med_E|TH1F|$z$<br>vertex z of the median energy cluster for each still elligible candidate|X|
+|$z_{E_{max}}$<br>vertex z of maximum energy cluster|vZ_Max_E|TH1F|$z$<br>vertex z of the maximum energy cluster for each still elligible candidate|X|
+|Energy Sum|sumE|TH1F|$\overset{N=3}{\underset{i=1}\Sigma} E_{cl_i}$<br> energy sum of each still elligible 3 cluster combinations|✔|
+|Minimum Energy|minE|TH1F|$E_{cl_{min}}$<br> energy minimum cluster energy of each still elligible 3 cluster combinations|X|
+|Median Energy|medE|TH1F|$E_{cl_{med}}$<br> energy median cluster energy of each still elligible 3 cluster combinations|X|
+|Maximum Energy|maxE|TH1F|$E_{cl_{max}}$<br> energy maximum cluster energy of each still elligible 3 cluster combinations|X|
 
 <b>\* - the momentum variables for the &gamma; &gamma; decay show the momentum sum for each still elligible candidate particle, since the momentum sums vary depending which two particles are assumed to be the photons. 
 
 \*\* - The "Also M&oslash;ller?" column indicates histograms that are also filled for M&oslash;ller before and after each cut.
 </b>
-
-To be completed
