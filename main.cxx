@@ -1,8 +1,8 @@
 /**
- * Trigger Validation Processor
+ * X17 First Analysis Processor
  * @author Erik Wrightson
- * @version 06.08.2026
- * @creation 04.05.2026
+ * @version 07.27.2026
+ * @creation 06.08.2026
  */
 
 #include <iostream>

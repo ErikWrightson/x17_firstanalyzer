@@ -2,14 +2,14 @@
 This repository takes in reconstructed experimental data from the PRad Collaboration's X17 (E12-21-003) experiment, and form ROOT files with histograms before and after each cut for intiial analysis frameworks for the following event types (the Ta is never detected and typically servers as a spectator.):
 <div align="center">
 <b>
-A'/Protophobic Boson-like: e<sup>−</sup>+Ta $\rightarrow$ e<sup>−</sup> + X + Ta $\rightarrow$ e<sup>−</sup> + e<sup>+</sup> + e<sup>−</sup>+ Ta (assuming X→e^+^e^-^)
+A'/Protophobic Boson-like: e<sup>−</sup>+Ta &rightarrow; e<sup>−</sup> + X + Ta &rightarrow; e<sup>−</sup> + e<sup>+</sup> + e<sup>−</sup>+ Ta (assuming X&rightarrow;e<sup>+</sup>e<sup>-</sup>)
 </b><br>
 <figure>
 <img src="images/X17Brem.jpg" alt="Moller Feynman Diagram" width="200"/>
 <figcaption><p style="font-size: 10px;"><i>Bremsstrahlung-like X particle generation diagram.</i></p></figcaption>
 </figure>
 <b>
-QED Meson-like: e<sup>−</sup>+Ta $\rightarrow$ e<sup>−</sup> + X + Ta $\rightarrow$ e<sup>−</sup> + &gamma; + &gamma; + Ta (assuming X→&gamma; + &gamma;)
+QED Meson-like: e<sup>−</sup>+Ta &rightarrow; e<sup>−</sup> + X + Ta &rightarrow; e<sup>−</sup> + &gamma; + &gamma; + Ta (assuming X&rightarrow;&gamma; + &gamma;)
 </b><br>
 <b>
 M&oslash;ller (for mass resolution): 𝒆<sup>−</sup>+ Ta $\rightarrow$ 𝒆<sup>−</sup>+ Ta<sup>+</sup> + 𝒆<sup>−</sup>
@@ -35,7 +35,7 @@ If the -f option is used then the executable expects a .root file in the format 
 If the -L option is used then for input a .txt file is expected in the format of all lines having the entire file path including filename of each file to be included in analysis each separated by linebreaks.
 
 ## Selection Cuts
-### X$\rightarrow$ e<sup>+</sup> + e<sup>-</sup> Event Selection Cuts
+### X&rightarrow; e<sup>+</sup> + e<sup>-</sup> Event Selection Cuts
 
 |Cut Number|Cut Name|Cut Descriptions|
 |----------|--------|----------------|
@@ -52,7 +52,7 @@ If the -L option is used then for input a .txt file is expected in the format of
 |10|Vertex Z|$\lvert z_i \rvert < 2.0m$ <br> All reconstructed vertices be within $2.0m$ of the target.|
 
 
-### X$\rightarrow$ &gamma; + &gamma; Event Selection Cuts
+### X&rightarrow; &gamma; + &gamma; Event Selection Cuts
 
 |Cut Number|Cut Name|Cut Descriptions|
 |----------|--------|----------------|
