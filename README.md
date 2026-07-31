@@ -1,4 +1,5 @@
 # x17_firstanalyzer
+
 This repository takes in reconstructed experimental data from the PRad Collaboration's X17 (E12-21-003) experiment, and form ROOT files with histograms before and after each cut for intiial analysis frameworks for the following event types (the Ta is never detected and typically servers as a spectator.):
 <div align="center">
 <b>
@@ -19,6 +20,9 @@ M&oslash;ller (for mass resolution): 𝒆<sup>−</sup>+ Ta $\rightarrow$ 𝒆<s
 <figcaption><p style="font-size: 10px;"><i>M&oslash;ller process Feynman diagram.</i></p></figcaption>
 </figure>
 </div>
+
+## Automation Scripts
+For details about running this analysis in parallel with certain automated settings and plotting please refer to the scripts [README](./scripts/README.md) file.
 
 ## Run Options
 |Option|Input|Description|Default Value|
